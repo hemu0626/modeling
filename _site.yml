@@ -1,0 +1,18 @@
+name: "MTH020"
+output_dir: "docs"
+navbar:
+  title: "Data Visualization"
+  right:
+    - text: "Import Data"
+      href: import.html
+    - text: "Ploting with examples"
+      href: datavis.html
+    - text: "Linear Regression with R"
+      href: Reg.html
+    - text: "Sample Question"
+      href: sample.html
+output:
+  html_document:
+    theme: cosmo
+
+

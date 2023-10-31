@@ -1,0 +1,92 @@
+---
+title: "Sample Questions"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+---
+
+#### Question 1 (10 marks)
+
+Check the R code and results and answer the questions below.
+
+```{r}
+library(ggplot2)
+str(diamonds)
+```
+
+(a) How many kinds  `cut' of diamonds in this data set, and how many observations collected in total? How many variables(attributes) are listed in the dataset? (3 marks)
+
+Answer: 5 kinds (1 mark), 53940 observations in the data set (1 mark), 10 variables (1 mark).
+
+(b) What is the name of the package we load below, and what is the name of the plot? Hint: Scatter plot or density plot or histogram? (3 marks)
+
+```{r}
+library(ggplot2) #load the package
+ggplot(diamonds[1:100,], aes(x=carat, y=price, shape=cut)) + geom_point(size=2)
+```
+
+Answer: package name: ggplot2 (1 mark), scatter plot (2 marks).
+
+(c) Based on the boxplot below, 
+
+```{r}
+library(ggplot2)
+ggplot(diamonds[1:10000,], aes(x=cut, y=price, fill=cut)) + geom_boxplot()
+```
+
+Compare the medians of price among different cut, give comments on the boxplot, large difference  in price or not based on cut? (4 marks)
+
+Answer: The medians are barely same, there is not large difference.
+
+#### Question 2 (15 marks)
+
+Suppose we are modeling a simple linear regression, y is the independent variable and x is the dependent variable. 
+
+```{r}
+x<-c(1,3,4,7,8)
+y<-c(12,11,7,5,3)
+cbind(x,y)
+```
+
+
+(a) Write down the true model. (2 marks)
+
+Answer:  $y=\beta_0+\beta_1x+\epsilon$  (2 marks)
+
+(b) Write down the estimated model. (2 marks)
+
+Answer:  $\hat{y}=\hat{\beta}_0+\hat{\beta}_1x$ or $\hat{y}=b_0+b_1x$  (2 marks)
+
+(c) Write down the residual. (2 marks)
+
+Answer:  $e=y-\hat{y}$ or ($\hat{\epsilon}=y-\hat{y}$ )  (2 marks)
+
+(d) What is the assumption of the residual $\epsilon$ (Hint: What is the distribution)? (2 marks)
+
+Answer: 
+
+  1. We assume the $\epsilon$ follows normal distribution with mean 0 and a constant     standard deviation. (1 mark)
+  2. The error terms are independent. (1 mark)
+
+
+(e) Find the sample correlation coefficient $r$ between $x$ and $y$, by the formula. (4 marks)
+
+$$r=\frac{\sum(x-\bar{x})(y-\bar{y})}{\sqrt{\sum(x-\bar{x})^2\sum(y-\bar{y})^2}}=\frac{\sum(x-\bar{x})(y-\bar{y})}{(n-1)s_xs_y}$$
+(given $\sum(x-\bar{x})(y-\bar{y})= -42.8$, $s_x=2.88$, $s_y=3.85$)
+
+Answer: 
+
+```{r}
+cor(x,y)
+```
+
+(f) Find the least square estimators $\hat{\beta}_0$ and $\hat{\beta}_1$, by the formula. (3 marks)
+
+$$\hat{\beta}_1=b_1=r\frac{s_y}{s_x} , \quad \hat{\beta}_0=b_0=\bar{y}-b_1\bar{x}$$
+Answer:
+
+```{r}
+summary(lm(y~x))
+```

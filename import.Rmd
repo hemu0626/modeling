@@ -1,0 +1,35 @@
+---
+title: "Import Data"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+---
+
+### Package: readr and readxl
+
+> The goal of readr is to provide a fast and friendly way to read rectangular data from delimited files, such as comma-separated values (CSV) and tab-separated values (TSV). It is designed to parse many types of data found in the wild, while providing an informative problem report when parsing leads to unexpected results. If you are new to readr, the best place to start is the data import chapter in R for Data Science.
+
+> The readxl package makes it easy to get data out of Excel and into R. Compared to many of the existing packages (e.g. gdata, xlsx, xlsReadWrite) readxl has no external dependencies, so it’s easy to install and use on all operating systems. It is designed to work with tabular data. readxl supports both the legacy .xls format and the modern xml-based .xlsx format. The libxls C library is used to support .xls, which abstracts away many of the complexities of the underlying binary format. To parse .xlsx, we use the RapidXML C++ library.
+
+### Working Directory
+
+The working directory is the location on your computer R will use for reading and writing files. Use getwd() to print your current working directory to the console. Use setwd() to set your working directory.
+
+Or just click!!!
+
+### Example
+
+```{r }
+library(readr)
+#library(readxl)
+dat1<-read.csv('mtcars.csv')
+str(dat1)
+head(dat1)
+```
+
+
+### Reference
+
++ [package: readr](https://readr.tidyverse.org/)

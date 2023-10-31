@@ -1,0 +1,191 @@
+---
+title: "Examples"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+---
+
+### Load data and check data 
+
+The mtcars dataset is a built-in dataset in R. It comprises 11 features of 32 automobiles from the 1974 Motor Trend US magazine. 
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+# Data exploration
+# View(mtcars)
+# class(mtcars)
+# ?mtcars
+str(mtcars)
+```
+
+
+### Correlation Plot
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+library(GGally)
+ggpairs(mtcars)
+```
+
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+library(GGally)
+ 
+# From the help page:
+data(flea)
+ggpairs(flea, columns = 2:4, ggplot2::aes(colour=species)) 
+```
+
+### Other Basic Plots
+
+#### Scatter plot and smooth
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+# load ggplot2
+library(ggplot2)
+library(hrbrthemes)
+
+# mtcars dataset is natively available in R
+# head(mtcars)
+ 
+# A basic scatterplot with color depending on Species
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) + 
+    geom_point(size=6) +
+    theme_ipsum()
+```
+
+#### Histogram
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+# library & data
+library(ggplot2)
+data <- data.frame(x=rnorm(100))
+ 
+# Basic plot with title
+ggplot( data=data, aes(x=x)) + 
+  geom_histogram(fill="skyblue", alpha=0.5) +
+  ggtitle("A blue Histogram") +
+  theme_minimal()
+```
+
+#### Boxplot
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+# Load ggplot2
+library(ggplot2)
+ 
+# The mtcars dataset is natively available
+# head(mtcars)
+ 
+# A really basic boxplot.
+ggplot(mtcars, aes(x=as.factor(cyl), y=mpg)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) + 
+    xlab("cyl")
+
+
+```
+
+#### Fancy boxplot(jitters) and Violin plot
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+library(tidyverse)
+library(hrbrthemes)
+library(viridis)
+# create a dataset
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) )
+)
+
+# Plot
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("A boxplot with jitter") +
+    xlab("")
+
+# Boxplot basic
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Basic boxplot") +
+    xlab("")
+
+# Violin basic
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart") +
+    xlab("")
+```
+
+### Faceting with ggplot2
+
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+# Libraries
+library(tidyverse)
+library(hrbrthemes)
+library(babynames)
+library(viridis)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# Load dataset from github
+don <- babynames %>% 
+  filter(name %in% c("Ashley", "Amanda", "Mary", "Deborah",   "Dorothy", "Betty", "Helen", "Jennifer", "Shirley")) %>%
+  filter(sex=="F")
+
+# Plot
+don %>%
+  ggplot( aes(x=year, y=n, group=name, fill=name)) +
+    geom_area() +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(legend.position="none") +
+    ggtitle("Popularity of American names in the previous 30 years") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0, "lines"),
+      strip.text.x = element_text(size = 8),
+      plot.title = element_text(size=13)
+    ) +
+    facet_wrap(~name, scale="free_y")
+
+```
+
+### Multiple Graph
+
+```{r eval=TRUE,message = FALSE,warning = FALSE}
+library(ggplot2)
+library(gridExtra)
+# Make 3 simple graphics:
+g1 <- ggplot(mtcars, aes(x=qsec)) + geom_density(fill="slateblue")
+g2 <- ggplot(mtcars, aes(x=drat, y=qsec, color=cyl)) + geom_point(size=5) + theme(legend.position="none")
+g3 <- ggplot(mtcars, aes(x=factor(cyl), y=qsec, fill=cyl)) + geom_boxplot() + theme(legend.position="none")
+g4 <- ggplot(mtcars , aes(x=factor(cyl), fill=factor(cyl))) +  geom_bar()
+ 
+# Plots
+grid.arrange(g2, arrangeGrob(g3, g4, ncol=2), nrow = 2)
+```
