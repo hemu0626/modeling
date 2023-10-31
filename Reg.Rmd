@@ -19,7 +19,7 @@ Data set and code source:
 
 + [Lecture 10 by Prof. Alexandra Chouldechova](https://www.andrew.cmu.edu/user/achoulde/94842/lectures/lecture10/lecture10-94842-2020.html)
 
-Most code of the this page are directly copied and I only add some basic math for explaining the simpl linear regression.
+Most code of the this page are directly copied and I only add some basic math for explaining the simple linear regression.
 
 ```{r eval=TRUE,message = FALSE,warning = FALSE}
 crime <- read_delim("http://www.andrew.cmu.edu/user/achoulde/94842/data/crime_simple.txt", delim = "\t")
