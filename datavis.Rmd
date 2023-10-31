@@ -43,15 +43,15 @@ ggpairs(flea, columns = 2:4, ggplot2::aes(colour=species))
 ```{r eval=TRUE,message = FALSE,warning = FALSE}
 # load ggplot2
 library(ggplot2)
-library(hrbrthemes)
+#library(hrbrthemes)
 
 # mtcars dataset is natively available in R
 # head(mtcars)
  
 # A basic scatterplot with color depending on Species
 ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) + 
-    geom_point(size=6) +
-    theme_ipsum()
+    geom_point(size=6) 
+#    theme_ipsum()
 ```
 
 #### Histogram
@@ -89,7 +89,7 @@ ggplot(mtcars, aes(x=as.factor(cyl), y=mpg)) +
 
 ```{r eval=TRUE,message = FALSE,warning = FALSE}
 library(tidyverse)
-library(hrbrthemes)
+#library(hrbrthemes)
 library(viridis)
 # create a dataset
 data <- data.frame(
@@ -103,7 +103,7 @@ data %>%
     geom_boxplot() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
-    theme_ipsum() +
+#    theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
@@ -116,7 +116,7 @@ data %>%
   ggplot( aes(x=name, y=value, fill=name)) +
     geom_boxplot() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
-    theme_ipsum() +
+  #  theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
@@ -129,7 +129,7 @@ data %>%
   ggplot( aes(x=name, y=value, fill=name)) +
     geom_violin() +
     scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
-    theme_ipsum() +
+#    theme_ipsum() +
     theme(
       legend.position="none",
       plot.title = element_text(size=11)
@@ -144,7 +144,7 @@ data %>%
 ```{r eval=TRUE,message = FALSE,warning = FALSE}
 # Libraries
 library(tidyverse)
-library(hrbrthemes)
+#library(hrbrthemes)
 library(babynames)
 library(viridis)
 
@@ -164,7 +164,7 @@ don %>%
     scale_fill_viridis(discrete = TRUE) +
     theme(legend.position="none") +
     ggtitle("Popularity of American names in the previous 30 years") +
-    theme_ipsum() +
+ #   theme_ipsum() +
     theme(
       legend.position="none",
       panel.spacing = unit(0, "lines"),
