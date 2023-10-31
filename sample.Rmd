@@ -45,8 +45,8 @@ Answer: The medians are barely same, there is not large difference.
 Suppose we are modeling a simple linear regression, y is the independent variable and x is the dependent variable. 
 
 ```{r}
-x<-c(1,3,4,7,8)
-y<-c(12,11,7,5,3)
+x<-c(1,3,4,7,13)
+y<-c(12,11,7,5,4)
 cbind(x,y)
 ```
 
@@ -74,11 +74,16 @@ Answer:
 (e) Find the sample correlation coefficient $r$ between $x$ and $y$, by the formula. (4 marks)
 
 $$r=\frac{\sum(x-\bar{x})(y-\bar{y})}{\sqrt{\sum(x-\bar{x})^2\sum(y-\bar{y})^2}}=\frac{\sum(x-\bar{x})(y-\bar{y})}{(n-1)s_xs_y}$$
-(given $\sum(x-\bar{x})(y-\bar{y})= -42.8$, $s_x=2.88$, $s_y=3.85$)
+(given $\sum(x-\bar{x})(y-\bar{y})$)
 
 Answer: 
 
 ```{r}
+top<-sum((x-mean(x))*(y-mean(y)))
+sd(x)
+sd(y)
+bot<-4*sd(x)*sd(y)
+top/bot
 cor(x,y)
 ```
 
