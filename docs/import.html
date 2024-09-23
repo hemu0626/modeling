@@ -13,7 +13,7 @@
 
 <title>Import Data</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -144,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -177,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -186,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -353,15 +350,30 @@ div.tocify {
 <div id="package-readr-and-readxl" class="section level3">
 <h3>Package: readr and readxl</h3>
 <blockquote>
-<p>The goal of readr is to provide a fast and friendly way to read rectangular data from delimited files, such as comma-separated values (CSV) and tab-separated values (TSV). It is designed to parse many types of data found in the wild, while providing an informative problem report when parsing leads to unexpected results. If you are new to readr, the best place to start is the data import chapter in R for Data Science.</p>
+<p>The goal of readr is to provide a fast and friendly way to read
+rectangular data from delimited files, such as comma-separated values
+(CSV) and tab-separated values (TSV). It is designed to parse many types
+of data found in the wild, while providing an informative problem report
+when parsing leads to unexpected results. If you are new to readr, the
+best place to start is the data import chapter in R for Data
+Science.</p>
 </blockquote>
 <blockquote>
-<p>The readxl package makes it easy to get data out of Excel and into R. Compared to many of the existing packages (e.g. gdata, xlsx, xlsReadWrite) readxl has no external dependencies, so it’s easy to install and use on all operating systems. It is designed to work with tabular data. readxl supports both the legacy .xls format and the modern xml-based .xlsx format. The libxls C library is used to support .xls, which abstracts away many of the complexities of the underlying binary format. To parse .xlsx, we use the RapidXML C++ library.</p>
+<p>The readxl package makes it easy to get data out of Excel and into R.
+Compared to many of the existing packages (e.g. gdata, xlsx,
+xlsReadWrite) readxl has no external dependencies, so it’s easy to
+install and use on all operating systems. It is designed to work with
+tabular data. readxl supports both the legacy .xls format and the modern
+xml-based .xlsx format. The libxls C library is used to support .xls,
+which abstracts away many of the complexities of the underlying binary
+format. To parse .xlsx, we use the RapidXML C++ library.</p>
 </blockquote>
 </div>
 <div id="working-directory" class="section level3">
 <h3>Working Directory</h3>
-<p>The working directory is the location on your computer R will use for reading and writing files. Use getwd() to print your current working directory to the console. Use setwd() to set your working directory.</p>
+<p>The working directory is the location on your computer R will use for
+reading and writing files. Use getwd() to print your current working
+directory to the console. Use setwd() to set your working directory.</p>
 <p>Or just click!!!</p>
 </div>
 <div id="example" class="section level3">

@@ -382,34 +382,20 @@ crime &lt;- crime %&gt;%
          median.assets = median.assets / 100)
 # print summary of the data
 summary(crime)</code></pre>
-<pre><code>##  crime.per.million  young.males    is.south   average.ed    exp.per.cap.1960
-##  Min.   : 34.20    Min.   :119.0   0:31     Min.   : 8.70   Min.   : 45.0   
-##  1st Qu.: 65.85    1st Qu.:130.0   1:16     1st Qu.: 9.75   1st Qu.: 62.5   
-##  Median : 83.10    Median :136.0            Median :10.80   Median : 78.0   
-##  Mean   : 90.51    Mean   :138.6            Mean   :10.56   Mean   : 85.0   
-##  3rd Qu.:105.75    3rd Qu.:146.0            3rd Qu.:11.45   3rd Qu.:104.5   
-##  Max.   :199.30    Max.   :177.0            Max.   :12.20   Max.   :166.0   
-##  exp.per.cap.1959  labour.part     male.per.fem      population    
-##  Min.   : 41.00   Min.   :480.0   Min.   : 934.0   Min.   :  3.00  
-##  1st Qu.: 58.50   1st Qu.:530.5   1st Qu.: 964.5   1st Qu.: 10.00  
-##  Median : 73.00   Median :560.0   Median : 977.0   Median : 25.00  
-##  Mean   : 80.23   Mean   :561.2   Mean   : 983.0   Mean   : 36.62  
-##  3rd Qu.: 97.00   3rd Qu.:593.0   3rd Qu.: 992.0   3rd Qu.: 41.50  
-##  Max.   :157.00   Max.   :641.0   Max.   :1071.0   Max.   :168.00  
-##     nonwhite      unemp.youth      unemp.adult    median.assets  
-##  Min.   :  2.0   Min.   : 70.00   Min.   :20.00   Min.   :2.880  
-##  1st Qu.: 24.0   1st Qu.: 80.50   1st Qu.:27.50   1st Qu.:4.595  
-##  Median : 76.0   Median : 92.00   Median :34.00   Median :5.370  
-##  Mean   :101.1   Mean   : 95.47   Mean   :33.98   Mean   :5.254  
-##  3rd Qu.:132.5   3rd Qu.:104.00   3rd Qu.:38.50   3rd Qu.:5.915  
-##  Max.   :423.0   Max.   :142.00   Max.   :58.00   Max.   :6.890  
-##  num.low.salary 
-##  Min.   :126.0  
-##  1st Qu.:165.5  
-##  Median :176.0  
-##  Mean   :194.0  
-##  3rd Qu.:227.5  
-##  Max.   :276.0</code></pre>
+<pre><code>##  crime.per.million  young.males    is.south   average.ed    exp.per.cap.1960 exp.per.cap.1959  labour.part   
+##  Min.   : 34.20    Min.   :119.0   0:31     Min.   : 8.70   Min.   : 45.0    Min.   : 41.00   Min.   :480.0  
+##  1st Qu.: 65.85    1st Qu.:130.0   1:16     1st Qu.: 9.75   1st Qu.: 62.5    1st Qu.: 58.50   1st Qu.:530.5  
+##  Median : 83.10    Median :136.0            Median :10.80   Median : 78.0    Median : 73.00   Median :560.0  
+##  Mean   : 90.51    Mean   :138.6            Mean   :10.56   Mean   : 85.0    Mean   : 80.23   Mean   :561.2  
+##  3rd Qu.:105.75    3rd Qu.:146.0            3rd Qu.:11.45   3rd Qu.:104.5    3rd Qu.: 97.00   3rd Qu.:593.0  
+##  Max.   :199.30    Max.   :177.0            Max.   :12.20   Max.   :166.0    Max.   :157.00   Max.   :641.0  
+##   male.per.fem      population        nonwhite      unemp.youth      unemp.adult    median.assets   num.low.salary 
+##  Min.   : 934.0   Min.   :  3.00   Min.   :  2.0   Min.   : 70.00   Min.   :20.00   Min.   :2.880   Min.   :126.0  
+##  1st Qu.: 964.5   1st Qu.: 10.00   1st Qu.: 24.0   1st Qu.: 80.50   1st Qu.:27.50   1st Qu.:4.595   1st Qu.:165.5  
+##  Median : 977.0   Median : 25.00   Median : 76.0   Median : 92.00   Median :34.00   Median :5.370   Median :176.0  
+##  Mean   : 983.0   Mean   : 36.62   Mean   :101.1   Mean   : 95.47   Mean   :33.98   Mean   :5.254   Mean   :194.0  
+##  3rd Qu.: 992.0   3rd Qu.: 41.50   3rd Qu.:132.5   3rd Qu.:104.00   3rd Qu.:38.50   3rd Qu.:5.915   3rd Qu.:227.5  
+##  Max.   :1071.0   Max.   :168.00   Max.   :423.0   Max.   :142.00   Max.   :58.00   Max.   :6.890   Max.   :276.0</code></pre>
 <pre class="r"><code>str(crime)</code></pre>
 <pre><code>## tibble [47 × 14] (S3: tbl_df/tbl/data.frame)
 ##  $ crime.per.million: num [1:47] 79.1 163.5 57.8 196.9 123.4 ...
@@ -435,10 +421,6 @@ boxplots) and summary statistics to get some sense of how the data
 behaves.</p>
 <pre class="r"><code># Scatter plot of outcome (crime.per.million) against average.ed
 qplot(average.ed, crime.per.million, data = crime)</code></pre>
-<pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-## generated.</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># correlation between education and crime
 with(crime, cor(average.ed, crime.per.million))</code></pre>
@@ -560,12 +542,10 @@ crime.lm</code></pre>
 ## lm(formula = crime.per.million ~ ., data = crime)
 ## 
 ## Coefficients:
-##      (Intercept)       young.males         is.south1        average.ed  
-##       -6.918e+02         1.040e+00        -8.308e+00         1.802e+01  
-## exp.per.cap.1960  exp.per.cap.1959       labour.part      male.per.fem  
-##        1.608e+00        -6.673e-01        -4.103e-02         1.648e-01  
-##       population          nonwhite       unemp.youth       unemp.adult  
-##       -4.128e-02         7.175e-03        -6.017e-01         1.792e+00  
+##      (Intercept)       young.males         is.south1        average.ed  exp.per.cap.1960  exp.per.cap.1959  
+##       -6.918e+02         1.040e+00        -8.308e+00         1.802e+01         1.608e+00        -6.673e-01  
+##      labour.part      male.per.fem        population          nonwhite       unemp.youth       unemp.adult  
+##       -4.103e-02         1.648e-01        -4.128e-02         7.175e-03        -6.017e-01         1.792e+00  
 ##    median.assets    num.low.salary  
 ##        1.374e+01         7.929e-01</code></pre>
 <pre class="r"><code>summary(crime.lm)</code></pre>
@@ -652,23 +632,17 @@ males in the population.</p>
 <pre class="r"><code># List all attributes of the linear model
 attributes(crime.lm)</code></pre>
 <pre><code>## $names
-##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
-##  [5] &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;  
-##  [9] &quot;contrasts&quot;     &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;        
-## [13] &quot;model&quot;        
+##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;          &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;           
+##  [8] &quot;df.residual&quot;   &quot;contrasts&quot;     &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;         &quot;model&quot;        
 ## 
 ## $class
 ## [1] &quot;lm&quot;</code></pre>
 <pre class="r"><code># coefficients
 crime.lm$coef</code></pre>
-<pre><code>##      (Intercept)      young.males        is.south1       average.ed 
-##   -691.837587905      1.039809653     -8.308312889     18.016010601 
-## exp.per.cap.1960 exp.per.cap.1959      labour.part     male.per.fem 
-##      1.607818377     -0.667258285     -0.041031047      0.164794968 
-##       population         nonwhite      unemp.youth      unemp.adult 
-##     -0.041276887      0.007174688     -0.601675298      1.792262901 
-##    median.assets   num.low.salary 
-##     13.735847285      0.792932786</code></pre>
+<pre><code>##      (Intercept)      young.males        is.south1       average.ed exp.per.cap.1960 exp.per.cap.1959      labour.part 
+##   -691.837587905      1.039809653     -8.308312889     18.016010601      1.607818377     -0.667258285     -0.041031047 
+##     male.per.fem       population         nonwhite      unemp.youth      unemp.adult    median.assets   num.low.salary 
+##      0.164794968     -0.041276887      0.007174688     -0.601675298      1.792262901     13.735847285      0.792932786</code></pre>
 <p>None of the attributes seem to give you p-values. Here’s what you can
 do to get a table that allows you to extract p-values.</p>
 <pre class="r"><code># Pull coefficients element from summary(lm) object
@@ -701,9 +675,8 @@ class(crime.lm.coef)</code></pre>
 ## 
 ## $dimnames
 ## $dimnames[[1]]
-##  [1] &quot;(Intercept)&quot;      &quot;young.males&quot;      &quot;is.south1&quot;        &quot;average.ed&quot;      
-##  [5] &quot;exp.per.cap.1960&quot; &quot;exp.per.cap.1959&quot; &quot;labour.part&quot;      &quot;male.per.fem&quot;    
-##  [9] &quot;population&quot;       &quot;nonwhite&quot;         &quot;unemp.youth&quot;      &quot;unemp.adult&quot;     
+##  [1] &quot;(Intercept)&quot;      &quot;young.males&quot;      &quot;is.south1&quot;        &quot;average.ed&quot;       &quot;exp.per.cap.1960&quot; &quot;exp.per.cap.1959&quot;
+##  [7] &quot;labour.part&quot;      &quot;male.per.fem&quot;     &quot;population&quot;       &quot;nonwhite&quot;         &quot;unemp.youth&quot;      &quot;unemp.adult&quot;     
 ## [13] &quot;median.assets&quot;    &quot;num.low.salary&quot;  
 ## 
 ## $dimnames[[2]]
@@ -804,20 +777,13 @@ set.</p>
 pairs(crime[,economic.var.names])</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-19-1.png" width="960" /></p>
 <pre class="r"><code>round(cor(crime[,economic.var.names]), 3)</code></pre>
-<pre><code>##                  exp.per.cap.1959 exp.per.cap.1960 unemp.adult unemp.youth
-## exp.per.cap.1959            1.000            0.994       0.169      -0.052
-## exp.per.cap.1960            0.994            1.000       0.185      -0.044
-## unemp.adult                 0.169            0.185       1.000       0.746
-## unemp.youth                -0.052           -0.044       0.746       1.000
-## labour.part                 0.106            0.121      -0.421      -0.229
-## median.assets               0.794            0.787       0.092       0.045
-##                  labour.part median.assets
-## exp.per.cap.1959       0.106         0.794
-## exp.per.cap.1960       0.121         0.787
-## unemp.adult           -0.421         0.092
-## unemp.youth           -0.229         0.045
-## labour.part            1.000         0.295
-## median.assets          0.295         1.000</code></pre>
+<pre><code>##                  exp.per.cap.1959 exp.per.cap.1960 unemp.adult unemp.youth labour.part median.assets
+## exp.per.cap.1959            1.000            0.994       0.169      -0.052       0.106         0.794
+## exp.per.cap.1960            0.994            1.000       0.185      -0.044       0.121         0.787
+## unemp.adult                 0.169            0.185       1.000       0.746      -0.421         0.092
+## unemp.youth                -0.052           -0.044       0.746       1.000      -0.229         0.045
+## labour.part                 0.106            0.121      -0.421      -0.229       1.000         0.295
+## median.assets               0.794            0.787       0.092       0.045       0.295         1.000</code></pre>
 <p>Since the above-diagonal and below-diagonal plots contain essentially
 the same information, it’s often more useful to display some other
 values in one of the spaces. In the example below, we use the panel.cor

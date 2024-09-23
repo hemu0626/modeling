@@ -13,7 +13,7 @@
 
 <title>Examples</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -144,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -177,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -186,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -352,7 +349,8 @@ div.tocify {
 
 <div id="load-data-and-check-data" class="section level3">
 <h3>Load data and check data</h3>
-<p>The mtcars dataset is a built-in dataset in R. It comprises 11 features of 32 automobiles from the 1974 Motor Trend US magazine.</p>
+<p>The mtcars dataset is a built-in dataset in R. It comprises 11
+features of 32 automobiles from the 1974 Motor Trend US magazine.</p>
 <pre class="r"><code># Data exploration
 # View(mtcars)
 # class(mtcars)
@@ -375,13 +373,13 @@ str(mtcars)</code></pre>
 <h3>Correlation Plot</h3>
 <pre class="r"><code>library(GGally)
 ggpairs(mtcars)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre class="r"><code>library(GGally)
  
 # From the help page:
 data(flea)
 ggpairs(flea, columns = 2:4, ggplot2::aes(colour=species)) </code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="other-basic-plots" class="section level3">
 <h3>Other Basic Plots</h3>
@@ -397,7 +395,7 @@ library(ggplot2)
 # A basic scatterplot with color depending on Species
 ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) + 
     geom_point(size=6)  </code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code>#    theme_ipsum()</code></pre>
 </div>
 <div id="histogram" class="section level4">
@@ -411,7 +409,7 @@ ggplot( data=data, aes(x=x)) +
   geom_histogram(fill=&quot;skyblue&quot;, alpha=0.5) +
   ggtitle(&quot;A blue Histogram&quot;) +
   theme_minimal()</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="boxplot" class="section level4">
 <h4>Boxplot</h4>
@@ -425,7 +423,7 @@ library(ggplot2)
 ggplot(mtcars, aes(x=as.factor(cyl), y=mpg)) + 
     geom_boxplot(fill=&quot;slateblue&quot;, alpha=0.2) + 
     xlab(&quot;cyl&quot;)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="fancy-boxplotjitters-and-violin-plot" class="section level4">
 <h4>Fancy boxplot(jitters) and Violin plot</h4>
@@ -451,7 +449,7 @@ data %&gt;%
     ) +
     ggtitle(&quot;A boxplot with jitter&quot;) +
     xlab(&quot;&quot;)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <pre class="r"><code># Boxplot basic
 data %&gt;%
   ggplot( aes(x=name, y=value, fill=name)) +
@@ -464,7 +462,7 @@ data %&gt;%
     ) +
     ggtitle(&quot;Basic boxplot&quot;) +
     xlab(&quot;&quot;)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
 <pre class="r"><code># Violin basic
 data %&gt;%
   ggplot( aes(x=name, y=value, fill=name)) +
@@ -477,7 +475,7 @@ data %&gt;%
     ) +
     ggtitle(&quot;Violin chart&quot;) +
     xlab(&quot;&quot;)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-22-3.png" width="672" /></p>
 </div>
 </div>
 <div id="faceting-with-ggplot2" class="section level3">
@@ -512,7 +510,7 @@ don %&gt;%
       plot.title = element_text(size=13)
     ) +
     facet_wrap(~name, scale=&quot;free_y&quot;)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div id="multiple-graph" class="section level3">
 <h3>Multiple Graph</h3>
@@ -526,7 +524,7 @@ g4 &lt;- ggplot(mtcars , aes(x=factor(cyl), fill=factor(cyl))) +  geom_bar()
  
 # Plots
 grid.arrange(g2, arrangeGrob(g3, g4, ncol=2), nrow = 2)</code></pre>
-<p><img src="datavis_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="datavis_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 
 
