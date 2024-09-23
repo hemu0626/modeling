@@ -11,9 +11,9 @@
 
 
 
-<title>MTH020 Week 6: Data Visualization</title>
+<title>MTH020: Data Visualization</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -144,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -177,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -186,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -345,7 +342,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">MTH020 Week 6: Data Visualization</h1>
+<h1 class="title toc-ignore">MTH020: Data Visualization</h1>
 
 </div>
 
@@ -354,38 +351,94 @@ div.tocify {
 <h3>Introduction</h3>
 <p>Definitions by IBM</p>
 <blockquote>
-<p>What is data visualization? Data visualization is the representation of data through use of common graphics, such as charts, plots, infographics, and even animations. These visual displays of information communicate complex data relationships and data-driven insights in a way that is easy to understand.</p>
+<p>What is data visualization? Data visualization is the representation
+of data through use of common graphics, such as charts, plots,
+infographics, and even animations. These visual displays of information
+communicate complex data relationships and data-driven insights in a way
+that is easy to understand.</p>
 </blockquote>
 <blockquote>
-<p>Data visualization can be utilized for a variety of purposes, and it’s important to note that is not only reserved for use by data teams. Management also leverages it to convey organizational structure and hierarchy while data analysts and data scientists use it to discover and explain patterns and trends.</p>
+<p>Data visualization can be utilized for a variety of purposes, and
+it’s important to note that is not only reserved for use by data teams.
+Management also leverages it to convey organizational structure and
+hierarchy while data analysts and data scientists use it to discover and
+explain patterns and trends.</p>
 </blockquote>
 </div>
 <div id="r-and-rstudio" class="section level3">
 <h3>R and Rstudio</h3>
-<p>The GNU General Public License (GNU GPL or simply GPL) is a series of widely used free software licenses that guarantee end users the four freedoms to run, study, share, and modify the software.</p>
-<p>R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software.[7] The core R language is augmented by a large number of extension packages containing reusable code and documentation.</p>
-<p>The official R software environment is an open-source free software environment released as part of the GNU Project and available under the GNU General Public License. It is written primarily in C, Fortran, and R itself (partially self-hosting). Precompiled executables are provided for various operating systems. R has a command line interface.[11] Multiple third-party graphical user interfaces are also available, such as RStudio, an integrated development environment, and Jupyter, a notebook interface.</p>
-<p>RStudio is an integrated development environment for R, a programming language for statistical computing and graphics. It is available in two formats: RStudio Desktop is a regular desktop application while RStudio Server runs on a remote server and allows accessing RStudio using a web browser. The RStudio IDE is a product of Posit PBC (formerly RStudio PBC, formerly RStudio Inc.).</p>
+<p>The GNU General Public License (GNU GPL or simply GPL) is a series of
+widely used free software licenses that guarantee end users the four
+freedoms to run, study, share, and modify the software.</p>
+<p>R is a programming language for statistical computing and graphics
+supported by the R Core Team and the R Foundation for Statistical
+Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R
+is used among data miners, bioinformaticians and statisticians for data
+analysis and developing statistical software.[7] The core R language is
+augmented by a large number of extension packages containing reusable
+code and documentation.</p>
+<p>The official R software environment is an open-source free software
+environment released as part of the GNU Project and available under the
+GNU General Public License. It is written primarily in C, Fortran, and R
+itself (partially self-hosting). Precompiled executables are provided
+for various operating systems. R has a command line interface.[11]
+Multiple third-party graphical user interfaces are also available, such
+as RStudio, an integrated development environment, and Jupyter, a
+notebook interface.</p>
+<p>RStudio is an integrated development environment for R, a programming
+language for statistical computing and graphics. It is available in two
+formats: RStudio Desktop is a regular desktop application while RStudio
+Server runs on a remote server and allows accessing RStudio using a web
+browser. The RStudio IDE is a product of Posit PBC (formerly RStudio
+PBC, formerly RStudio Inc.).</p>
 </div>
 <div id="package-tidyverse" class="section level3">
 <h3>Package: tidyverse</h3>
-<p>The `tidyverse’ is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures.</p>
-<p>We will mainly focus on some packages in this collections in this limited two hour introduction.</p>
-<p>The goal of readr is to provide a fast and friendly way to read rectangular data from delimited files, such as comma-separated values (CSV) and tab-separated values (TSV). It is designed to parse many types of data found in the wild, while providing an informative problem report when parsing leads to unexpected results. If you are new to readr, the best place to start is the data import chapter in R for Data Science.</p>
-<p>The readxl package makes it easy to get data out of Excel and into R. Compared to many of the existing packages (e.g. gdata, xlsx, xlsReadWrite) readxl has no external dependencies, so it’s easy to install and use on all operating systems. It is designed to work with tabular data.</p>
-<p>ggplot2 is an open-source data visualization package for the statistical programming language R. Created by Hadley Wickham in 2005, ggplot2 is an implementation of Leland Wilkinson’s Grammar of Graphics—a general scheme for data visualization which breaks up graphs into semantic components such as scales and layers. ggplot2 can serve as a replacement for the base graphics in R and contains a number of defaults for web and print display of common scales. Since 2005, ggplot2 has grown in use to become one of the most popular R packages.</p>
+<p>The `tidyverse’ is an opinionated collection of R packages designed
+for data science. All packages share an underlying design philosophy,
+grammar, and data structures.</p>
+<p>We will mainly focus on some packages in this collections in this
+limited two hour introduction.</p>
+<p>The goal of readr is to provide a fast and friendly way to read
+rectangular data from delimited files, such as comma-separated values
+(CSV) and tab-separated values (TSV). It is designed to parse many types
+of data found in the wild, while providing an informative problem report
+when parsing leads to unexpected results. If you are new to readr, the
+best place to start is the data import chapter in R for Data
+Science.</p>
+<p>The readxl package makes it easy to get data out of Excel and into R.
+Compared to many of the existing packages (e.g. gdata, xlsx,
+xlsReadWrite) readxl has no external dependencies, so it’s easy to
+install and use on all operating systems. It is designed to work with
+tabular data.</p>
+<p>ggplot2 is an open-source data visualization package for the
+statistical programming language R. Created by Hadley Wickham in 2005,
+ggplot2 is an implementation of Leland Wilkinson’s Grammar of Graphics—a
+general scheme for data visualization which breaks up graphs into
+semantic components such as scales and layers. ggplot2 can serve as a
+replacement for the base graphics in R and contains a number of defaults
+for web and print display of common scales. Since 2005, ggplot2 has
+grown in use to become one of the most popular R packages.</p>
 </div>
 <div id="reference-and-useful-links" class="section level3">
 <h3>Reference and useful links</h3>
 <ul>
 <li><p><a href="https://www.tidyverse.org/">tidyverse</a></p></li>
-<li><p><a href="https://readr.tidyverse.org/">package: readr</a></p></li>
-<li><p><a href="https://readxl.tidyverse.org/">package: readxl</a></p></li>
-<li><p><a href="https://ggplot2.tidyverse.org/">package: ggplot2</a></p></li>
-<li><p><a href="https://r-graph-gallery.com/ggplot2-package.html">r-graph-gallery: ggplot2</a></p></li>
-<li><p><a href="https://ggplot2-book.org/">ggplot2: Elegant Graphics for Data Analysis (3e)</a></p></li>
-<li><p><a href="https://www.ibm.com/topics/data-visualization">IBM data-visualization</a></p></li>
-<li><p><a href="https://en.wikipedia.org/wiki/Ggplot2">Wiki ggplot2</a></p></li>
+<li><p><a href="https://readr.tidyverse.org/">package:
+readr</a></p></li>
+<li><p><a href="https://readxl.tidyverse.org/">package:
+readxl</a></p></li>
+<li><p><a href="https://ggplot2.tidyverse.org/">package:
+ggplot2</a></p></li>
+<li><p><a
+href="https://r-graph-gallery.com/ggplot2-package.html">r-graph-gallery:
+ggplot2</a></p></li>
+<li><p><a href="https://ggplot2-book.org/">ggplot2: Elegant Graphics for
+Data Analysis (3e)</a></p></li>
+<li><p><a href="https://www.ibm.com/topics/data-visualization">IBM
+data-visualization</a></p></li>
+<li><p><a href="https://en.wikipedia.org/wiki/Ggplot2">Wiki
+ggplot2</a></p></li>
 </ul>
 </div>
 

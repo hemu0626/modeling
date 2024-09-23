@@ -1,5 +1,5 @@
 ---
-title: "MTH020 Week 6: Data Visualization"
+title: "MTH020: Data Visualization"
 output:
   html_document:
     toc: true

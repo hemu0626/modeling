@@ -13,7 +13,7 @@
 
 <title>Simple Linear Regression by R</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -144,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -177,8 +181,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -186,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -357,9 +354,12 @@ library(GGally)
 library(knitr)</code></pre>
 <p>Data set and code source:</p>
 <ul>
-<li><a href="https://www.andrew.cmu.edu/user/achoulde/94842/lectures/lecture10/lecture10-94842-2020.html">Lecture 10 by Prof. Alexandra Chouldechova</a></li>
+<li><a
+href="https://www.andrew.cmu.edu/user/achoulde/94842/lectures/lecture10/lecture10-94842-2020.html">Lecture
+10 by Prof. Alexandra Chouldechova</a></li>
 </ul>
-<p>Most code of the this page are directly copied and I only add some basic math for explaining the simple linear regression.</p>
+<p>Most code of the this page are directly copied and I only add some
+basic math for explaining the simple linear regression.</p>
 <pre class="r"><code>crime &lt;- read_delim(&quot;http://www.andrew.cmu.edu/user/achoulde/94842/data/crime_simple.txt&quot;, delim = &quot;\t&quot;)</code></pre>
 <pre class="r"><code>### Rename the data set by code from Prof. Chouldechova
 crime &lt;- crime %&gt;%
@@ -429,28 +429,40 @@ summary(crime)</code></pre>
 </div>
 <div id="visualization" class="section level3">
 <h3>Visualization</h3>
-<p>You can start by feeding everything into a regression, but it’s often a better idea to construct some simple plots (e.g., scatterplots and boxplots) and summary statistics to get some sense of how the data behaves.</p>
+<p>You can start by feeding everything into a regression, but it’s often
+a better idea to construct some simple plots (e.g., scatterplots and
+boxplots) and summary statistics to get some sense of how the data
+behaves.</p>
 <pre class="r"><code># Scatter plot of outcome (crime.per.million) against average.ed
 qplot(average.ed, crime.per.million, data = crime)</code></pre>
+<pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># correlation between education and crime
 with(crime, cor(average.ed, crime.per.million))</code></pre>
 <pre><code>## [1] 0.3228349</code></pre>
-<p>This seems to suggest that higher levels of average education are associated with higher crime rates. <em>Can you come up with an explanation for this phenomenon?</em></p>
+<p>This seems to suggest that higher levels of average education are
+associated with higher crime rates. <em>Can you come up with an
+explanation for this phenomenon?</em></p>
 <pre class="r"><code># Scatter plot of outcome (crime.per.million) against median.assets
 qplot(median.assets, crime.per.million, data = crime)</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># correlation between education and crime
 with(crime, cor(median.assets, crime.per.million))</code></pre>
 <pre><code>## [1] 0.4413199</code></pre>
-<p>There also appears to be a positive association between median assets and crime rates.</p>
+<p>There also appears to be a positive association between median assets
+and crime rates.</p>
 <pre class="r"><code># Boxplots showing crime rate broken down by southern vs non-southern state
 qplot(is.south, crime.per.million, geom = &quot;boxplot&quot;, data = crime)</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-6-1.png" width="480" style="display: block; margin: auto;" /></p>
 </div>
-<div id="theory-behind-simple-linear-regression-model" class="section level3">
+<div id="theory-behind-simple-linear-regression-model"
+class="section level3">
 <h3>Theory behind simple linear regression model</h3>
-<p>Suppose we are modeling a simple linear regression, y is the independent variable and x is the dependent variable.</p>
+<p>Suppose we are modeling a simple linear regression, y is the
+independent variable and x is the dependent variable.</p>
 <pre class="r"><code>x&lt;-c(1,3,4,7,8)
 y&lt;-c(12,11,7,5,3)
 cbind(x,y)</code></pre>
@@ -466,29 +478,47 @@ cbind(x,y)</code></pre>
 </div>
 <div id="estimated-model" class="section level4">
 <h4>Estimated model</h4>
-<p><span class="math inline">\(\hat{y}=\hat{\beta}_0+\hat{\beta}_1x\)</span> or <span class="math inline">\(\hat{y}=b_0+b_1x\)</span></p>
+<p><span
+class="math inline">\(\hat{y}=\hat{\beta}_0+\hat{\beta}_1x\)</span> or
+<span class="math inline">\(\hat{y}=b_0+b_1x\)</span></p>
 </div>
 <div id="residual" class="section level4">
 <h4>Residual</h4>
-<p><span class="math inline">\(e=y-\hat{y}\)</span> or (<span class="math inline">\(\hat{\epsilon}=y-\hat{y}\)</span> )</p>
+<p><span class="math inline">\(e=y-\hat{y}\)</span> or (<span
+class="math inline">\(\hat{\epsilon}=y-\hat{y}\)</span> )</p>
 </div>
 <div id="assumption-of-the-residual-epsilon." class="section level4">
-<h4>Assumption of the residual <span class="math inline">\(\epsilon\)</span>.</h4>
+<h4>Assumption of the residual <span
+class="math inline">\(\epsilon\)</span>.</h4>
 <ul>
-<li>The <span class="math inline">\(\epsilon\)</span> follows normal distribution with mean 0 and a constant standard deviation.</li>
+<li>The <span class="math inline">\(\epsilon\)</span> follows normal
+distribution with mean 0 and a constant standard deviation.</li>
 <li>The error terms are independent.</li>
 </ul>
-<p>We have other further details in the assumption, we will learn to check later.</p>
+<p>We have other further details in the assumption, we will learn to
+check later.</p>
 </div>
-<div id="sample-correlation-coefficient-r-between-x-and-y" class="section level4">
-<h4>Sample correlation coefficient <span class="math inline">\(r\)</span> between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span></h4>
-<p><span class="math display">\[r=\frac{\sum(x-\bar{x})(y-\bar{y})}{\sqrt{\sum(x-\bar{x})^2\sum(y-\bar{y})^2}}=\frac{\sum(x-\bar{x})(y-\bar{y})}{(n-1)s_xs_y}\]</span> (given <span class="math inline">\(\sum(x-\bar{x})(y-\bar{y})= -42.8\)</span>, <span class="math inline">\(s_x=2.88\)</span>, <span class="math inline">\(s_y=3.85\)</span>)</p>
+<div id="sample-correlation-coefficient-r-between-x-and-y"
+class="section level4">
+<h4>Sample correlation coefficient <span
+class="math inline">\(r\)</span> between <span
+class="math inline">\(x\)</span> and <span
+class="math inline">\(y\)</span></h4>
+<p><span
+class="math display">\[r=\frac{\sum(x-\bar{x})(y-\bar{y})}{\sqrt{\sum(x-\bar{x})^2\sum(y-\bar{y})^2}}=\frac{\sum(x-\bar{x})(y-\bar{y})}{(n-1)s_xs_y}\]</span>
+(given <span class="math inline">\(\sum(x-\bar{x})(y-\bar{y})=
+-42.8\)</span>, <span class="math inline">\(s_x=2.88\)</span>, <span
+class="math inline">\(s_y=3.85\)</span>)</p>
 <pre class="r"><code>cor(x,y)</code></pre>
 <pre><code>## [1] -0.9654146</code></pre>
 </div>
-<div id="least-square-estimators-hatbeta_0-and-hatbeta_1" class="section level4">
-<h4>Least square estimators <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span></h4>
-<p><span class="math display">\[\hat{\beta}_1=b_1=r\frac{s_y}{s_x} , \quad \hat{\beta}_0=b_0=\bar{y}-b_1\bar{x}\]</span></p>
+<div id="least-square-estimators-hatbeta_0-and-hatbeta_1"
+class="section level4">
+<h4>Least square estimators <span
+class="math inline">\(\hat{\beta}_0\)</span> and <span
+class="math inline">\(\hat{\beta}_1\)</span></h4>
+<p><span class="math display">\[\hat{\beta}_1=b_1=r\frac{s_y}{s_x} ,
+\quad \hat{\beta}_0=b_0=\bar{y}-b_1\bar{x}\]</span></p>
 <pre class="r"><code>summary(lm(y~x))</code></pre>
 <pre><code>## 
 ## Call:
@@ -510,10 +540,18 @@ cbind(x,y)</code></pre>
 ## F-statistic: 41.13 on 1 and 3 DF,  p-value: 0.007681</code></pre>
 </div>
 </div>
-<div id="constructing-a-regression-model-by-data-crime" class="section level3">
+<div id="constructing-a-regression-model-by-data-crime"
+class="section level3">
 <h3>Constructing a regression model by data ‘crime’</h3>
-<p>To construct a linear regression model in R, we use the <code>lm()</code> function. You can specify the regression model in various ways. The simplest is often to use the formula specification.</p>
-<p>The first model we fit is a regression of the outcome (<code>crimes.per.million</code>) against all the other variables in the data set. You can either write out all the variable names. or use the shorthand <code>y ~ .</code> to specify that you want to include all the variables in your regression.</p>
+<p>To construct a linear regression model in R, we use the
+<code>lm()</code> function. You can specify the regression model in
+various ways. The simplest is often to use the formula
+specification.</p>
+<p>The first model we fit is a regression of the outcome
+(<code>crimes.per.million</code>) against all the other variables in the
+data set. You can either write out all the variable names. or use the
+shorthand <code>y ~ .</code> to specify that you want to include all the
+variables in your regression.</p>
 <pre class="r"><code>crime.lm &lt;- lm(crime.per.million ~ ., data = crime)
 # Summary of the linear regression model
 crime.lm</code></pre>
@@ -561,7 +599,9 @@ crime.lm</code></pre>
 ## Residual standard error: 21.94 on 33 degrees of freedom
 ## Multiple R-squared:  0.7692, Adjusted R-squared:  0.6783 
 ## F-statistic: 8.462 on 13 and 33 DF,  p-value: 3.686e-07</code></pre>
-<p>R’s default is to output values in scientific notation. This can make it hard to interpret the numbers. Here’s some code that can be used to force full printout of numbers.</p>
+<p>R’s default is to output values in scientific notation. This can make
+it hard to interpret the numbers. Here’s some code that can be used to
+force full printout of numbers.</p>
 <pre class="r"><code>options(scipen=4)  # Set scipen = 0 to get back to default</code></pre>
 <pre class="r"><code>summary(crime.lm)</code></pre>
 <pre><code>## 
@@ -594,11 +634,21 @@ crime.lm</code></pre>
 ## Residual standard error: 21.94 on 33 degrees of freedom
 ## Multiple R-squared:  0.7692, Adjusted R-squared:  0.6783 
 ## F-statistic: 8.462 on 13 and 33 DF,  p-value: 0.0000003686</code></pre>
-<p>Looking at the p-values, it looks like <code>num.low.salary</code> (number of families per 1000 earning below 1/2 the median income), <code>unemp.adult</code> (Unemployment rate of urban males per 1000 of age 35-39), <code>average.ed</code> (Mean # of years of schooling 25 or older), and <code>young.males</code> (number of males of age 14-24 per 1000 population) are all statistically significant predictors of crime rate.</p>
-<p>The coefficients for these predictors are all positive, so crime rates are positively associated with wealth inequality, adult unemployment rates, average education levels, and high rates of young males in the population.</p>
+<p>Looking at the p-values, it looks like <code>num.low.salary</code>
+(number of families per 1000 earning below 1/2 the median income),
+<code>unemp.adult</code> (Unemployment rate of urban males per 1000 of
+age 35-39), <code>average.ed</code> (Mean # of years of schooling 25 or
+older), and <code>young.males</code> (number of males of age 14-24 per
+1000 population) are all statistically significant predictors of crime
+rate.</p>
+<p>The coefficients for these predictors are all positive, so crime
+rates are positively associated with wealth inequality, adult
+unemployment rates, average education levels, and high rates of young
+males in the population.</p>
 <div id="exploring-the-lm-object" class="section level5">
 <h5>Exploring the lm object</h5>
-<p>What kind of output do we get when we run a linear model (<code>lm</code>) in R?</p>
+<p>What kind of output do we get when we run a linear model
+(<code>lm</code>) in R?</p>
 <pre class="r"><code># List all attributes of the linear model
 attributes(crime.lm)</code></pre>
 <pre><code>## $names
@@ -619,7 +669,8 @@ crime.lm$coef</code></pre>
 ##     -0.041276887      0.007174688     -0.601675298      1.792262901 
 ##    median.assets   num.low.salary 
 ##     13.735847285      0.792932786</code></pre>
-<p>None of the attributes seem to give you p-values. Here’s what you can do to get a table that allows you to extract p-values.</p>
+<p>None of the attributes seem to give you p-values. Here’s what you can
+do to get a table that allows you to extract p-values.</p>
 <pre class="r"><code># Pull coefficients element from summary(lm) object
 round(summary(crime.lm)$coef, 3)</code></pre>
 <pre><code>##                  Estimate Std. Error t value Pr(&gt;|t|)
@@ -637,7 +688,8 @@ round(summary(crime.lm)$coef, 3)</code></pre>
 ## unemp.adult         1.792      0.856   2.093    0.044
 ## median.assets      13.736     10.583   1.298    0.203
 ## num.low.salary      0.793      0.235   3.373    0.002</code></pre>
-<p>If you want a particular p-value, you can get it by doing the following</p>
+<p>If you want a particular p-value, you can get it by doing the
+following</p>
 <pre class="r"><code># Pull the coefficients table from summary(lm)
 crime.lm.coef &lt;- round(summary(crime.lm)$coef, 3)
 # See what this gives
@@ -658,24 +710,49 @@ class(crime.lm.coef)</code></pre>
 ## [1] &quot;Estimate&quot;   &quot;Std. Error&quot; &quot;t value&quot;    &quot;Pr(&gt;|t|)&quot;</code></pre>
 <pre class="r"><code>crime.lm.coef[&quot;average.ed&quot;, &quot;Pr(&gt;|t|)&quot;]</code></pre>
 <pre><code>## [1] 0.009</code></pre>
-<p>The coefficients table is a matrix with named rows and columns. You can therefore access particular cells either by numeric index, or by name (as in the example above).</p>
+<p>The coefficients table is a matrix with named rows and columns. You
+can therefore access particular cells either by numeric index, or by
+name (as in the example above).</p>
 </div>
 <div id="plotting-the-lm-object" class="section level5">
 <h5>Plotting the lm object</h5>
 <pre class="r"><code>plot(crime.lm)</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;" /><img src="Reg_files/figure-html/unnamed-chunk-16-2.png" width="576" style="display: block; margin: auto;" /><img src="Reg_files/figure-html/unnamed-chunk-16-3.png" width="576" style="display: block; margin: auto;" /><img src="Reg_files/figure-html/unnamed-chunk-16-4.png" width="576" style="display: block; margin: auto;" /></p>
-<p>These four plots are important diagnostic tools in assessing whether the linear model is appropriate. The first two plots are the most important, but the last two can also help with identifying outliers and non-linearities.</p>
-<p><strong>Residuals vs. Fitted</strong> When a linear model is appropriate, we expect</p>
+<p>These four plots are important diagnostic tools in assessing whether
+the linear model is appropriate. The first two plots are the most
+important, but the last two can also help with identifying outliers and
+non-linearities.</p>
+<p><strong>Residuals vs. Fitted</strong> When a linear model is
+appropriate, we expect</p>
 <ol style="list-style-type: decimal">
-<li><p>the residuals will have constant variance when plotted against fitted values; and</p></li>
+<li><p>the residuals will have constant variance when plotted against
+fitted values; and</p></li>
 <li><p>the residuals and fitted values will be uncorrelated.</p></li>
 </ol>
-<p>If there are clear trends in the residual plot, or the plot looks like a funnel, these are clear indicators that the given linear model is inappropriate.</p>
-<p><strong>Normal QQ plot</strong> You can use a linear model for prediction even if the underlying normality assumptions don’t hold. However, in order for the p-values to be believable, the residuals from the regression must look approximately normally distributed.</p>
-<p><strong>Scale-location plot</strong> This is another version of the residuals vs fitted plot. There should be no discernible trends in this plot.</p>
-<p><strong>Residuals vs Leverage</strong>. Leverage is a measure of how much an observation influenced the model fit. It’s a one-number summary of how different the model fit would be if the given observation was excluded, compared to the model fit where the observation is included. Points with <em>high residual</em> (poorly described by the model) and <em>high leverage</em> (high influence on model fit) are outliers. They’re skewing the model fit away from the rest of the data, and don’t really seem to fit with the rest of the data.</p>
+<p>If there are clear trends in the residual plot, or the plot looks
+like a funnel, these are clear indicators that the given linear model is
+inappropriate.</p>
+<p><strong>Normal QQ plot</strong> You can use a linear model for
+prediction even if the underlying normality assumptions don’t hold.
+However, in order for the p-values to be believable, the residuals from
+the regression must look approximately normally distributed.</p>
+<p><strong>Scale-location plot</strong> This is another version of the
+residuals vs fitted plot. There should be no discernible trends in this
+plot.</p>
+<p><strong>Residuals vs Leverage</strong>. Leverage is a measure of how
+much an observation influenced the model fit. It’s a one-number summary
+of how different the model fit would be if the given observation was
+excluded, compared to the model fit where the observation is included.
+Points with <em>high residual</em> (poorly described by the model) and
+<em>high leverage</em> (high influence on model fit) are outliers.
+They’re skewing the model fit away from the rest of the data, and don’t
+really seem to fit with the rest of the data.</p>
 <blockquote>
-<p>The residual vs fitted and scale-location diagnostic plots for the crime data aren’t especially insightful, largely due to the very small sample size. Below we look at the <code>diamonds</code> data to see what a more typical anaylsis of linear model diagnostic plots might reveal.</p>
+<p>The residual vs fitted and scale-location diagnostic plots for the
+crime data aren’t especially insightful, largely due to the very small
+sample size. Below we look at the <code>diamonds</code> data to see what
+a more typical anaylsis of linear model diagnostic plots might
+reveal.</p>
 </blockquote>
 </div>
 <div id="diagnostic-plots-for-diamonds-data." class="section level5">
@@ -685,23 +762,44 @@ class(crime.lm.coef)</code></pre>
 plot(diamonds.lm)</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-17-2.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-17-3.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-17-4.png" width="672" /></p>
 <p><strong>Residuals vs. Fitted</strong></p>
-<p>There is a clear indication of non-linearity present in this plot. Furthermore, we see that the variance appears to be increasing in fitted value.</p>
-<p><strong>Normal QQ plot</strong> The residuals appear highly non-normal. Both the lower tail and upper tail are heavier than we would expect under normality. This may be due to the non-constant variance issue we observed in the Residuals vs. Fitted plot.</p>
-<p><strong>Scale-location plot</strong> We see a clear increasing trend in residual variance that runs through most of the plot. This is indicated by the upward slope of the red line, which we can interpret as the standard deviation of the residuals at the given level of fitted value.</p>
-<p><strong>Residuals vs Leverage</strong>. None of the points appear to be outliers.</p>
+<p>There is a clear indication of non-linearity present in this plot.
+Furthermore, we see that the variance appears to be increasing in fitted
+value.</p>
+<p><strong>Normal QQ plot</strong> The residuals appear highly
+non-normal. Both the lower tail and upper tail are heavier than we would
+expect under normality. This may be due to the non-constant variance
+issue we observed in the Residuals vs. Fitted plot.</p>
+<p><strong>Scale-location plot</strong> We see a clear increasing trend
+in residual variance that runs through most of the plot. This is
+indicated by the upward slope of the red line, which we can interpret as
+the standard deviation of the residuals at the given level of fitted
+value.</p>
+<p><strong>Residuals vs Leverage</strong>. None of the points appear to
+be outliers.</p>
 <blockquote>
-<p>Here’s what happens if we log-transform both the price and carat variables.</p>
+<p>Here’s what happens if we log-transform both the price and carat
+variables.</p>
 </blockquote>
 <pre class="r"><code>diamonds.lm2 &lt;- lm(log(price) ~ I(log(carat)) + cut + clarity + color, data = diamonds)
 
 plot(diamonds.lm2)</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-18-2.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-18-3.png" width="672" /><img src="Reg_files/figure-html/unnamed-chunk-18-4.png" width="672" /></p>
-<p>While there remains a very slight indication of non-linearity in the Residual vs Fitted plot, the non-constant variance issue appears to have been addressed by the variable transformations. The Normal QQ plot indicates that the residuals have a heavier tailed distribution, but since we have a very large sample size this should not cause problems for inference. There do not appear to be any clear outliers in the data.</p>
+<p>While there remains a very slight indication of non-linearity in the
+Residual vs Fitted plot, the non-constant variance issue appears to have
+been addressed by the variable transformations. The Normal QQ plot
+indicates that the residuals have a heavier tailed distribution, but
+since we have a very large sample size this should not cause problems
+for inference. There do not appear to be any clear outliers in the
+data.</p>
 </div>
 <div id="collinearity-and-pairs-plots" class="section level5">
 <h5>Collinearity and pairs plots</h5>
-<p>In your regression class you probably learned that <strong>collinearity</strong> can throw off the coefficient estimates. To diagnose collinearity, we can do a plot matrix. In base graphics, this can be accomplished via the <code>pairs</code> function.</p>
-<p>As a demo, let’s look at some of the economic indicators in our data set.</p>
+<p>In your regression class you probably learned that
+<strong>collinearity</strong> can throw off the coefficient estimates.
+To diagnose collinearity, we can do a plot matrix. In base graphics,
+this can be accomplished via the <code>pairs</code> function.</p>
+<p>As a demo, let’s look at some of the economic indicators in our data
+set.</p>
 <pre class="r"><code>economic.var.names &lt;- c(&quot;exp.per.cap.1959&quot;, &quot;exp.per.cap.1960&quot;, &quot;unemp.adult&quot;, &quot;unemp.youth&quot;, &quot;labour.part&quot;, &quot;median.assets&quot;)
 pairs(crime[,economic.var.names])</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-19-1.png" width="960" /></p>
@@ -720,7 +818,11 @@ pairs(crime[,economic.var.names])</code></pre>
 ## unemp.youth           -0.229         0.045
 ## labour.part            1.000         0.295
 ## median.assets          0.295         1.000</code></pre>
-<p>Since the above-diagonal and below-diagonal plots contain essentially the same information, it’s often more useful to display some other values in one of the spaces. In the example below, we use the panel.cor function from the <code>pairs()</code> documentation to add text below the diagonal.</p>
+<p>Since the above-diagonal and below-diagonal plots contain essentially
+the same information, it’s often more useful to display some other
+values in one of the spaces. In the example below, we use the panel.cor
+function from the <code>pairs()</code> documentation to add text below
+the diagonal.</p>
 <pre class="r"><code># Function taken from ?pairs Example section.  
 panel.cor &lt;- function(x, y, digits = 2, prefix = &quot;&quot;, cex.cor, ...)
 {
@@ -735,6 +837,21 @@ panel.cor &lt;- function(x, y, digits = 2, prefix = &quot;&quot;, cex.cor, ...)
 
 # Use panel.cor to display correlations in lower panel.
 pairs(crime[,economic.var.names], lower.panel = panel.cor)</code></pre>
+<pre><code>## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter
+## Warning in par(usr): argument 1 does not name a graphical parameter</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-20-1.png" width="960" /></p>
 <pre class="r"><code># ggpairs from GGally library
 # Unlike pairs(), ggpairs() works with non-numeric
@@ -748,8 +865,14 @@ ggpairs(crime[,c(economic.var.names, &quot;is.south&quot;)], axisLabels = &quot;
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="Reg_files/figure-html/unnamed-chunk-21-1.png" width="960" /></p>
-<p>Looking at the plot, we see that many of the variables are very strongly correlated. In particular, police expenditures are pretty much identical in 1959 and 1960. This is an extreme case of collinearity. Also, unsurprisingly, youth unemployment and adult unemployment are also highly correlated.</p>
-<p>Let’s just include the 1960 police expenditure variable, and also drop the youth unemployment variable. We’ll do this using the <code>update()</code> function. Here’s what happens.</p>
+<p>Looking at the plot, we see that many of the variables are very
+strongly correlated. In particular, police expenditures are pretty much
+identical in 1959 and 1960. This is an extreme case of collinearity.
+Also, unsurprisingly, youth unemployment and adult unemployment are also
+highly correlated.</p>
+<p>Let’s just include the 1960 police expenditure variable, and also
+drop the youth unemployment variable. We’ll do this using the
+<code>update()</code> function. Here’s what happens.</p>
 <pre class="r"><code>crime.lm.2 &lt;- update(crime.lm, . ~ . - exp.per.cap.1959 - unemp.youth)
 summary(crime.lm.2)</code></pre>
 <pre><code>## 
@@ -784,7 +907,8 @@ summary(crime.lm.2)</code></pre>
 ## Multiple R-squared:  0.7543, Adjusted R-squared:  0.6771 
 ## F-statistic: 9.769 on 11 and 35 DF,  p-value: 0.00000009378</code></pre>
 <pre class="r"><code>crime.lm.summary.2 &lt;- summary(crime.lm.2)</code></pre>
-<p>When outputting regression results, it’s always good to use the <code>kable()</code> function to make things look a little nicer.</p>
+<p>When outputting regression results, it’s always good to use the
+<code>kable()</code> function to make things look a little nicer.</p>
 <pre class="r"><code>kable(crime.lm.summary.2$coef, 
       digits = c(3, 3, 3, 4), format = &#39;markdown&#39;)</code></pre>
 <table>
@@ -886,15 +1010,25 @@ summary(crime.lm.2)</code></pre>
 </table>
 </div>
 </div>
-<div id="thinking-more-critically-about-linear-regression" class="section level3">
+<div id="thinking-more-critically-about-linear-regression"
+class="section level3">
 <h3>Thinking more critically about linear regression</h3>
-<p>So far we have seen how to run a linear regression using the <code>lm()</code> function and how to use the <code>plot()</code> and <code>pairs()</code> commands to diagnose common problems such as non-constant variance, outliers, and collinearity among predictors. In this section we’ll delve deeper into linear regression to better understand how to interpret the output. Our discussion will focus on interpreting factors (categorical variables) and interaction terms.</p>
-<p>Let’s pick up where we just left off. At the last stage, we had a regression with a couple of variable removed to address collinearity issues.</p>
+<p>So far we have seen how to run a linear regression using the
+<code>lm()</code> function and how to use the <code>plot()</code> and
+<code>pairs()</code> commands to diagnose common problems such as
+non-constant variance, outliers, and collinearity among predictors. In
+this section we’ll delve deeper into linear regression to better
+understand how to interpret the output. Our discussion will focus on
+interpreting factors (categorical variables) and interaction terms.</p>
+<p>Let’s pick up where we just left off. At the last stage, we had a
+regression with a couple of variable removed to address collinearity
+issues.</p>
 <pre class="r"><code>crime.lm &lt;- lm(crime.per.million ~ ., data = crime)
 
 # Remove 1959 expenditure and youth unemployment
 crime.lm2 &lt;- update(crime.lm, . ~ . - exp.per.cap.1959 - unemp.youth)</code></pre>
-<p>Here’s a comparison of the regression models (with and without the collinearity problem).</p>
+<p>Here’s a comparison of the regression models (with and without the
+collinearity problem).</p>
 <pre class="r"><code>kable(summary(crime.lm)$coef, 
       digits = c(3, 3, 3, 4), format = &#39;markdown&#39;)</code></pre>
 <table>
@@ -1108,19 +1242,38 @@ kable(crime.lm.summary2$coef,
 </tr>
 </tbody>
 </table>
-<p>Observe that the coefficient of 1960 expenditure went from being non-signficant to significant (p-value is now very small).</p>
-<div id="what-does-it-mean-for-a-coefficient-to-be-statistically-significant" class="section level4">
-<h4>What does it mean for a coefficient to be statistically significant?</h4>
-<p>Let’s look at the coefficient of <code>average.ed</code> in the <code>crime.lm2</code> model. This coefficient is 15.3280278. We might interpret it by saying that:</p>
+<p>Observe that the coefficient of 1960 expenditure went from being
+non-signficant to significant (p-value is now very small).</p>
+<div
+id="what-does-it-mean-for-a-coefficient-to-be-statistically-significant"
+class="section level4">
+<h4>What does it mean for a coefficient to be statistically
+significant?</h4>
+<p>Let’s look at the coefficient of <code>average.ed</code> in the
+<code>crime.lm2</code> model. This coefficient is 15.3280278. We might
+interpret it by saying that:</p>
 <blockquote>
-<p>All else being equal between two states, a 1-year increase in average education appears to be associated with a 15.3 increase in crime rates per million.</p>
+<p>All else being equal between two states, a 1-year increase in average
+education appears to be associated with a 15.3 increase in crime rates
+per million.</p>
 </blockquote>
-<p>In addition to the coefficient estimate, we also have a standard error estimate and a p-value. The standard error tells us how uncertain our estimate of the coefficient of <code>average.ed</code> actually is. In this case, our estimate is 15.3, but the standard error is 6.203. Using the “2 standard error rule” of thumb, we could refine our earlier statement to say:</p>
+<p>In addition to the coefficient estimate, we also have a standard
+error estimate and a p-value. The standard error tells us how uncertain
+our estimate of the coefficient of <code>average.ed</code> actually is.
+In this case, our estimate is 15.3, but the standard error is 6.203.
+Using the “2 standard error rule” of thumb, we could refine our earlier
+statement to say:</p>
 <blockquote>
-<p>Based on the data, we estimate a 1-year increase in average education is associated with a 15.3 +/- 12.4 increase in crimes per million population</p>
+<p>Based on the data, we estimate a 1-year increase in average education
+is associated with a 15.3 +/- 12.4 increase in crimes per million
+population</p>
 </blockquote>
-<p>In other words, our estimate is quite uncertain (has a large standard error).</p>
-<p>The “2 standard error rule” is a nice quick way of putting together approximate 95% confidence intervals for regression coefficients. Here’s a more principled approach, which works for any desired confidence level. This approach uses the <code>confint</code> command.</p>
+<p>In other words, our estimate is quite uncertain (has a large standard
+error).</p>
+<p>The “2 standard error rule” is a nice quick way of putting together
+approximate 95% confidence intervals for regression coefficients. Here’s
+a more principled approach, which works for any desired confidence
+level. This approach uses the <code>confint</code> command.</p>
 <pre class="r"><code># all 95% confidence intervals
 confint(crime.lm2)</code></pre>
 <pre><code>##                         2.5 %       97.5 %
@@ -1153,12 +1306,21 @@ coef(crime.lm2)[&quot;average.ed&quot;] - 2* summary(crime.lm2)$coef[&quot;avera
 coef(crime.lm2)[&quot;average.ed&quot;] + 2* summary(crime.lm2)$coef[&quot;average.ed&quot;, &quot;Std. Error&quot;]</code></pre>
 <pre><code>## average.ed 
 ##   27.73306</code></pre>
-<p>The p-value of 0.0184764 is less than 0.05, so this tells us that the coefficient estimate is statistically significantly different from 0. What does this mean? It means that the data suggests the actual association between average education and crime rates is non-zero. i.e., the data shows evidence that the coefficient is non-zero.</p>
-<p>One of the exercises on Homework 5 will walk you through running a simulation experiment to better understand what signficance means in a regression setting.</p>
-<p>Here’s a preview. The red line is the true regression line. The grey points show a random realization of the data. The various black curves show 100 estimates of the regression line based on repeated random realizations of the data.</p>
-<div class="figure">
-<img src="./slope_plot.png" alt="" />
-<p class="caption">Estimated regression lines</p>
+<p>The p-value of 0.0184764 is less than 0.05, so this tells us that the
+coefficient estimate is statistically significantly different from 0.
+What does this mean? It means that the data suggests the actual
+association between average education and crime rates is non-zero. i.e.,
+the data shows evidence that the coefficient is non-zero.</p>
+<p>One of the exercises on Homework 5 will walk you through running a
+simulation experiment to better understand what signficance means in a
+regression setting.</p>
+<p>Here’s a preview. The red line is the true regression line. The grey
+points show a random realization of the data. The various black curves
+show 100 estimates of the regression line based on repeated random
+realizations of the data.</p>
+<div class="float">
+<img src="./slope_plot.png" alt="Estimated regression lines" />
+<div class="figcaption">Estimated regression lines</div>
 </div>
 </div>
 <div id="what-happens-when-we-have-collinearity" class="section level4">
@@ -1177,35 +1339,80 @@ my.data</code></pre>
 ## 6 12 6.0 6.0
 ## 7 15 7.5 7.5</code></pre>
 <p>What do you notice?</p>
-<p>By construction, <code>x1</code> and <code>x2</code> are exactly the same variable, and the outcome <code>y</code> is perfectly modelled as <span class="math inline">\(y = x_1 + x_2\)</span>.</p>
+<p>By construction, <code>x1</code> and <code>x2</code> are exactly the
+same variable, and the outcome <code>y</code> is perfectly modelled as
+<span class="math inline">\(y = x_1 + x_2\)</span>.</p>
 <p>But there’s a problem… because the following are also true</p>
 <p><span class="math inline">\(y = 2 x_1\)</span></p>
 <p><span class="math inline">\(y = 3 x_1 - x_2\)</span></p>
 <p><span class="math inline">\(y = -400x_1 + 402 x_2\)</span></p>
-<p>In other words, based on the data, there’s no way of figuring out which of these models is “right”. However, if we drop one of the variables from the model, we know exactly what the coefficient of the other should be.</p>
-<p>Colinearity amongst predictors causes problems for regression precisely because the model is unable to accurately distinguish between many nearly equally plausible linear combinations of colinear variables. This can lead to large standard errors on coefficients, and even coefficient signs that don’t make sense.</p>
+<p>In other words, based on the data, there’s no way of figuring out
+which of these models is “right”. However, if we drop one of the
+variables from the model, we know exactly what the coefficient of the
+other should be.</p>
+<p>Colinearity amongst predictors causes problems for regression
+precisely because the model is unable to accurately distinguish between
+many nearly equally plausible linear combinations of colinear variables.
+This can lead to large standard errors on coefficients, and even
+coefficient signs that don’t make sense.</p>
 </div>
-<div id="practical-considerations-in-linear-regression" class="section level4">
+<div id="practical-considerations-in-linear-regression"
+class="section level4">
 <h4>Practical considerations in linear regression</h4>
-<p>After dealing with the colinearity issue by removing the 1959 expenditure variable, we see that <code>exp.per.cap.1960</code> is now highly significant.</p>
+<p>After dealing with the colinearity issue by removing the 1959
+expenditure variable, we see that <code>exp.per.cap.1960</code> is now
+highly significant.</p>
 <pre class="r"><code>crime.lm.summary2$coef[&quot;exp.per.cap.1960&quot;,]</code></pre>
 <pre><code>##      Estimate    Std. Error       t value      Pr(&gt;|t|) 
 ## 1.13829907170 0.22697675756 5.01504684417 0.00001532994</code></pre>
-<p>This is interesting. It’s essentially saying that, all else being equal, every dollar per capita increase in police expenditure is on average associated with an increase in crime of 1.13 per million population.</p>
+<p>This is interesting. It’s essentially saying that, all else being
+equal, every dollar per capita increase in police expenditure is on
+average associated with an increase in crime of 1.13 per million
+population.</p>
 <pre class="r"><code>crime.lm.summary2$coef[&quot;average.ed&quot;,]</code></pre>
 <pre><code>##    Estimate  Std. Error     t value    Pr(&gt;|t|) 
 ## 15.32802778  6.20251646  2.47125951  0.01847635</code></pre>
-<p>Also, for every unit increase in average education, we find that the number of reported crimes increases by about 15.3 per million.</p>
-<p>One of my main reasons for selecting this data set is that it illustrates some of the more common pitfalls in interpreting regression models.</p>
-<p><strong>Just because a coefficient is significant, doesn’t mean your covariate causes your response</strong></p>
+<p>Also, for every unit increase in average education, we find that the
+number of reported crimes increases by about 15.3 per million.</p>
+<p>One of my main reasons for selecting this data set is that it
+illustrates some of the more common pitfalls in interpreting regression
+models.</p>
+<p><strong>Just because a coefficient is significant, doesn’t mean your
+covariate causes your response</strong></p>
 <ul>
-<li>This is the old adage that correlation does not imply causation. In this example, we have strong evidence that higher police expenditures are positively associated with crime rates. This doesn’t mean that decreasing police expenditure will lower crime rate. The relationship is not causal – at least not in that direction. A more reasonable explanation is that higher crime rates promt policy makers to increase police expenditure.</li>
+<li>This is the old adage that correlation does not imply causation. In
+this example, we have strong evidence that higher police expenditures
+are positively associated with crime rates. This doesn’t mean that
+decreasing police expenditure will lower crime rate. The relationship is
+not causal – at least not in that direction. A more reasonable
+explanation is that higher crime rates promt policy makers to increase
+police expenditure.</li>
 </ul>
-<p><strong>There’s a difference between practical significance and statistical significance</strong></p>
+<p><strong>There’s a difference between practical significance and
+statistical significance</strong></p>
 <ul>
-<li>Both <code>average.ed</code> and <code>exp.per.cap.1960</code> are statistically significant. <code>exp.per.cap.1960</code> has a much more significant p-value, but also a much smaller coefficient. When looking at your regression model, you shouldn’t just look at the p-value column. The really interesting covariates are the ones that are significant, but also have the largest effect.</li>
+<li>Both <code>average.ed</code> and <code>exp.per.cap.1960</code> are
+statistically significant. <code>exp.per.cap.1960</code> has a much more
+significant p-value, but also a much smaller coefficient. When looking
+at your regression model, you shouldn’t just look at the p-value column.
+The really interesting covariates are the ones that are significant, but
+also have the largest effect.</li>
 </ul>
-<p>Note also that the units of measurement should be taken into account when thinking about coefficient estimates and effect sizes. Suppose, for example, that we regressed income (measured in $) on height and got a coefficient estimate of 100, with a standard error of 20. Is 100 a large effect? <em>The answer depends on the units of measurement.</em> If height had been measured in metres, we would be saying that every 1m increase in height is associated on average with a $100 increase in income. That’s too small an effect for us to care about. Now what if height was measured in mm? Then we’d be saying that every 1mm increase in height is associated on average with a $100 increase in income. Since 1inch = 25.4mm, this means that every 1inch difference in height is on average associated with a $2540 difference in income. This would be a tremendously large effect. <strong>Moral of the story</strong>: Whether an effect is ‘practically significant’ depends a lot on the unit of measurement.</p>
+<p>Note also that the units of measurement should be taken into account
+when thinking about coefficient estimates and effect sizes. Suppose, for
+example, that we regressed income (measured in $) on height and got a
+coefficient estimate of 100, with a standard error of 20. Is 100 a large
+effect? <em>The answer depends on the units of measurement.</em> If
+height had been measured in metres, we would be saying that every 1m
+increase in height is associated on average with a $100 increase in
+income. That’s too small an effect for us to care about. Now what if
+height was measured in mm? Then we’d be saying that every 1mm increase
+in height is associated on average with a $100 increase in income. Since
+1inch = 25.4mm, this means that every 1inch difference in height is on
+average associated with a $2540 difference in income. This would be a
+tremendously large effect. <strong>Moral of the story</strong>: Whether
+an effect is ‘practically significant’ depends a lot on the unit of
+measurement.</p>
 </div>
 </div>
 
